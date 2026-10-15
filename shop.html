@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" class="sub"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Shop Vases | The Floral Edit</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Marcellus&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head><body>
+<main class="wrap">
+  <div class="intro">
+    <span class="eyebrow">Shop</span>
+    <h1>Vases, ready to style</h1>
+    <p>Every vase is available on its own or arranged with flowers. Filter by where it will live.</p>
+  </div>
+  <div class="bar" role="region" aria-label="Filters">
+    <div class="chips" id="chips" role="group" aria-label="Setting"></div>
+    <div class="sel">
+      <label for="coll" style="display:flex;gap:10px;align-items:center;letter-spacing:.14em">Collection
+        <select id="coll"><option value="all">All</option><option value="studio">Studio vases</option><option value="theme">Theme pots</option></select></label>
+      <label for="sort" style="display:flex;gap:10px;align-items:center;letter-spacing:.14em">Sort
+        <select id="sort"><option value="feat">Featured</option><option value="lo">Price, low to high</option><option value="hi">Price, high to low</option></select></label>
+    </div>
+  </div>
+  <p class="mute" id="count" style="margin-bottom:28px;font-size:14px" aria-live="polite"></p>
+  <div class="grid" id="grid" style="padding-bottom:clamp(40px,6vw,90px)"></div>
+</main>
+<script src="assets/data.js"></script>
+<script src="assets/art.js"></script>
+<script src="assets/app.js"></script>
+<script>
+(function(){
+  App.layout('shop');
+  var D=DATA,st={set:'all',coll:'all',sort:'feat'};
+  var h=(location.hash||'').slice(1);
+  if(['home','office','party','cultural'].indexOf(h)>-1)st.set=h;
+  var CH=[['all','All'],['home','Home'],['office','Office'],['party','Parties'],['cultural','Cultural events']];
+  var chips=document.getElementById('chips'),grid=document.getElementById('grid'),cnt=document.getElementById('count');
+  function drawChips(){
+    chips.innerHTML='';
+    CH.forEach(function(c){var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=c[1];b.setAttribute('aria-pressed',String(st.set===c[0]));
+      b.addEventListener('click',function(){st.set=c[0];drawChips();render()});chips.appendChild(b)});
+  }
+  function render(){
+    var L=D.products.filter(function(p){return (st.set==='all'||p.tags.indexOf(st.set)>-1)&&(st.coll==='all'||p.coll===st.coll)});
+    if(st.sort==='lo')L.sort(function(a,b){return a.price-b.price});
+    if(st.sort==='hi')L.sort(function(a,b){return b.price-a.price});
+    cnt.textContent=L.length+(L.length===1?' piece':' pieces');
+    grid.innerHTML=L.length?L.map(App.card).join(''):'<div class="empty">Nothing matches those filters yet. Try another setting.</div>';
+    App.wire(grid);App.reveal(grid);
+  }
+  document.getElementById('coll').addEventListener('change',function(e){st.coll=e.target.value;render()});
+  document.getElementById('sort').addEventListener('change',function(e){st.sort=e.target.value;render()});
+  drawChips();render();
+})();
+</script>
+</body></html>
