@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en" class="sub"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Flowers | The Floral Edit</title>
+<meta name="theme-color" content="#535C3D">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Marcellus&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head><body>
+<main class="wrap">
+  <div class="intro"><span class="eyebrow">Flowers and availability</span><h1>Some stems take longer</h1>
+    <p>Common flowers are with us the next day. Others are sourced from growers, and rare ones are imported. Your delivery time follows the slowest flower in your bag, and everything is subject to availability.</p></div>
+  <div class="ftabs" id="fl" style="padding-block:36px 20px"></div>
+  <p class="fine">If a flower is delayed we will message you before we ship, with a close match or a new date. Prices shown are added to the vase price.</p>
+  <div class="cta" style="margin-block:32px clamp(40px,6vw,90px)"><a class="btn" href="shop.html">Shop vases</a><a class="btn ghost" href="events.html">Event setups</a></div>
+</main>
+<script src="assets/data.js"></script>
+<script src="assets/art.js"></script>
+<script src="assets/app.js"></script>
+<script>
+(function(){
+  App.layout('flowers');
+  var D=DATA;
+  document.getElementById('fl').innerHTML=['ready','order','exotic'].map(function(t){var T=D.tiers[t];
+    return '<section class="fgroup" data-rv><h3>'+T.t+' <span class="tier '+t+'">'+T.n+'</span></h3><p>'+T.l+'</p><div class="flist">'+
+    D.flowers.filter(function(f){return f.tier===t}).map(function(f){return '<div class="frow"><i style="background:'+f.cols[0]+'"></i><div>'+f.name+'<br><span>Adds '+App.money(f.add)+' to a vase</span></div><span class="tier '+t+'">'+T.n+'</span></div>'}).join('')+'</div></section>'}).join('');
+  App.reveal();
+})();
+</script>
+</body></html>

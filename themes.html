@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" class="sub"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Themes | The Floral Edit</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Marcellus&display=swap">
+<meta name="theme-color" content="#3D631C">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="stylesheet" href="assets/style.css">
+</head><body>
+<main class="wrap">
+  <div class="intro">
+    <span class="eyebrow">Theme pots</span>
+    <h1>Pots with a point of view</h1>
+    <p>Each pot borrows the colour, pattern and mood of a film, a series or a festival, and comes ready to arrange. Choose a group to browse.</p>
+  </div>
+  <div class="bar" style="margin-top:28px">
+    <div class="chips" id="tabs" role="tablist" aria-label="Theme groups"></div>
+    <span class="mute" id="lead" style="font-size:14px"></span>
+  </div>
+  <div class="tgrid" id="tg" style="padding-bottom:20px"></div>
+  <p class="fine">These pots are inspired by the mood of the titles and festivals named. They use original colours, patterns and flowers only, and carry no characters, logos or artwork from any studio, streaming service or rights holder. The Floral Edit is not affiliated with or endorsed by any of them.</p>
+  <div style="height:clamp(40px,6vw,90px)"></div>
+</main>
+<script src="assets/data.js"></script>
+<script src="assets/art.js"></script>
+<script src="assets/app.js"></script>
+<script>
+(function(){
+  App.layout('themes');
+  var D=DATA,cur=(location.hash||'').slice(1);
+  if(!D.groups.some(function(g){return g.id===cur}))cur='movies';
+  var tabs=document.getElementById('tabs'),tg=document.getElementById('tg'),lead=document.getElementById('lead');
+  function dots(p){var a=[p.glaze[0],p.glaze[1]];if(p.mc&&p.motif!=='none')a.push(p.mc);(p.arr.p||[]).slice(0,2).forEach(function(c){a.push(c)});return a.map(function(c){return '<i style="background:'+c+'"></i>'}).join('')}
+  function draw(){
+    tabs.innerHTML='';
+    D.groups.forEach(function(g){
+      var b=document.createElement('button');b.type='button';b.className='chip';b.setAttribute('role','tab');b.setAttribute('aria-selected',String(g.id===cur));b.textContent=g.name;
+      b.addEventListener('click',function(){cur=g.id;draw()});tabs.appendChild(b);
+    });
+    var g=D.groups.filter(function(x){return x.id===cur})[0];lead.textContent=g.lead;
+    var L=D.products.filter(function(p){return p.group===cur});
+    tg.innerHTML=L.map(function(p){
+      return '<article class="tcard" data-rv><a class="pic" href="product.html#'+p.id+'" data-pid="'+p.id+'" aria-label="View '+p.name+'">'+Art.vase(p)+'</a>'+
+        '<div><span class="insp">Inspired by '+p.insp.join(' \u00b7 ')+'</span><h3 style="margin-top:8px">'+p.name+'</h3></div>'+
+        '<p>'+p.blurb+'</p>'+
+        '<div class="row"><div class="swatches" aria-label="Palette">'+dots(p)+'</div><span>'+App.money(p.price)+'</span></div>'+
+        '<div class="row"><button class="btn sm plain" type="button" data-add="'+p.id+'">Add to bag</button><a class="link" href="product.html#'+p.id+'" data-pid="'+p.id+'">Details</a></div></article>';
+    }).join('');
+    App.wire(tg);App.reveal(tg);
+  }
+  draw();
+})();
+</script>
+</body></html>

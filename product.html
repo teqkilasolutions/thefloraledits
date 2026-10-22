@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en" class="sub"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Vase | The Floral Edit</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Marcellus&display=swap">
+<meta name="theme-color" content="#3D631C">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="stylesheet" href="assets/style.css">
+</head><body>
+<main class="wrap">
+  <div class="crumb"><a href="shop.html">Shop</a> / <span id="cr">Vase</span></div>
+  <div class="pd" id="pd"></div>
+  <section style="padding-bottom:clamp(40px,6vw,90px)">
+    <div class="head" data-rv><div><span class="eyebrow">You may also like</span><h2>More from the collection</h2></div></div>
+    <div class="grid" id="more" data-stagger></div>
+  </section>
+</main>
+<script src="assets/data.js"></script>
+<script src="assets/art.js"></script>
+<script src="assets/app.js"></script>
+<script>
+(function(){
+  App.layout('shop');
+  var D=DATA,id=(location.hash||'').slice(1);
+  if(!D.byId[id]){try{id=sessionStorage.getItem('tfe_pid')||''}catch(e){}}
+  var p=D.byId[id]||D.products[0];
+  document.title=p.name+' | The Floral Edit';
+  document.getElementById('cr').textContent=p.name;
+  var mode='arr',fid=p.arr.s==='grass'?'':'',qty=1,T=D.tiers;
+  var names={home:'Home',office:'Office',party:'Parties',cultural:'Cultural events'};
+  var groups=['ready','order','exotic'].map(function(t){return '<div class="fgroup"><h3 style="font-size:1.15rem">'+T[t].t+' <span class="tier '+t+'">'+T[t].n+'</span></h3><p>'+T[t].l+'</p><div class="fchips" role="radiogroup" aria-label="'+T[t].t+'">'+
+    D.flowers.filter(function(f){return f.tier===t}).map(function(f){return '<button type="button" class="fchip" role="radio" aria-checked="false" data-f="'+f.id+'"><i style="background:'+f.cols[0]+'"></i><span>'+f.name+'<small>+'+App.money(f.add)+'</small></span></button>'}).join('')+'</div></div>'}).join('');
+  var pd=document.getElementById('pd');
+  pd.innerHTML='<div class="pd-art" id="pa"></div><div class="pd-info">'+
+    '<span class="eyebrow">'+(p.theme?'Theme pot \u00b7 '+App.badge(p):'Studio collection')+'</span>'+
+    '<h1 style="font-size:clamp(2.2rem,4.6vw,3.6rem)">'+p.name+'</h1><div class="price" id="pp"></div><p class="mute">'+p.blurb+'</p>'+
+    (p.theme?'<p class="eyebrow" style="color:var(--mute)">Mood inspired by '+p.insp.join(', ')+'</p>':'')+
+    '<div class="opts" role="radiogroup" aria-label="Choose an option">'+
+    '<div class="opt" role="radio" tabindex="0" data-o="vase"><div>Vase only<small>Ready for your own flowers. <b>Ships next day</b></small></div><span>'+App.money(p.price)+'</span></div>'+
+    '<div class="opt" role="radio" tabindex="0" data-o="arr"><div>Signature arrangement<small>Styled as shown with seasonal flowers. <b>Ships next day</b></small></div><span>'+App.money(p.price+p.addon)+'</span></div>'+
+    '<div class="opt" role="radio" tabindex="0" data-o="custom"><div>Choose your own flowers<small>Pick from our full list. Timing depends on the flower</small></div><span>from '+App.money(p.price+Math.min.apply(null,D.flowers.map(function(f){return f.add})))+'</span></div></div>'+
+    '<div class="pickwrap" id="pick" hidden><div class="ftabs">'+groups+'</div><p class="fnote">Flowers are subject to availability. If a stem is delayed, we will message you with a close match or a new date before we ship.</p></div>'+
+    '<div class="avail" id="av"></div>'+
+    '<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center"><div class="qty"><button type="button" id="mn" aria-label="Decrease">\u2212</button><b id="q">1</b><button type="button" id="pl" aria-label="Increase">+</button></div><button class="btn" id="addb" type="button" style="flex:1;justify-content:center;min-width:200px">Add to bag</button></div>'+
+    '<div class="spec"><div><span>Size</span><span>'+p.size+'</span></div><div><span>Material</span><span>'+p.mat+'</span></div><div><span>Delivery</span><span id="dl"></span></div><div><span>Care</span><span>Hand wash, dry upright</span></div></div>'+
+    '<div><span class="eyebrow" style="display:block;margin-bottom:12px">Styled in</span><div class="pills">'+p.tags.map(function(t){return '<a href="shop.html#'+t+'">'+names[t]+'</a>'}).join('')+'</div></div></div>';
+  var pa=document.getElementById('pa'),pp=document.getElementById('pp'),pick=document.getElementById('pick'),av=document.getElementById('av');
+  function cur(){return mode==='custom'?(fid?'f:'+fid:'f:'):mode}
+  function paint(){
+    var o=mode==='custom'&&fid?'f:'+fid:mode==='custom'?'arr':mode,f=App.fl(o),u=p.price+(f?f.add:o==='arr'?p.addon:0);
+    pa.innerHTML=App.art(p,o);pa.firstChild.style.animation='pagein .8s both';
+    pp.textContent=App.money(u*qty);
+    var t=f?D.tiers[f.tier]:D.tiers.ready,tk=f?f.tier:'ready';
+    av.innerHTML=mode==='custom'&&!fid?'<b>Pick a flower to see delivery time</b>':'<b>Delivery: '+t.n+'</b><span>'+(mode==='vase'?'Vase only is packed and sent the next day.':t.l+' Subject to availability.')+'</span>';
+    document.getElementById('dl').textContent=mode==='custom'&&!fid?'Depends on flower':t.n;
+    pd.querySelectorAll('.opt').forEach(function(x){x.setAttribute('aria-checked',String(x.getAttribute('data-o')===mode))});
+    pd.querySelectorAll('.fchip').forEach(function(x){x.setAttribute('aria-checked',String(x.getAttribute('data-f')===fid))});
+    pick.hidden=mode!=='custom';document.getElementById('q').textContent=qty;
+  }
+  pd.querySelectorAll('.opt').forEach(function(o){
+    function go(){mode=o.getAttribute('data-o');paint()}
+    o.addEventListener('click',go);o.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}});
+  });
+  pd.querySelectorAll('.fchip').forEach(function(c){c.addEventListener('click',function(){fid=c.getAttribute('data-f');paint()})});
+  document.getElementById('mn').addEventListener('click',function(){qty=Math.max(1,qty-1);paint()});
+  document.getElementById('pl').addEventListener('click',function(){qty=Math.min(9,qty+1);paint()});
+  document.getElementById('addb').addEventListener('click',function(){
+    if(mode==='custom'&&!fid){av.innerHTML='<b>Please choose a flower first</b>';pick.scrollIntoView({behavior:'smooth',block:'center'});return}
+    App.add('p',p.id,mode==='custom'?'f:'+fid:mode,qty)});
+  paint();
+  var more=D.products.filter(function(x){return x.id!==p.id&&x.tags.some(function(t){return p.tags.indexOf(t)>-1})}).slice(0,4);
+  document.getElementById('more').innerHTML=more.map(App.card).join('');
+  App.wire();App.reveal();
+})();
+</script>
+</body></html>

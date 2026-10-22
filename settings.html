@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" class="sub"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Settings | The Floral Edit</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Marcellus&display=swap">
+<meta name="theme-color" content="#3D631C">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="stylesheet" href="assets/style.css">
+<style>.set,.looks-h{scroll-margin-top:96px}.anchors{display:flex;gap:6px 26px;flex-wrap:wrap;border-block:1px solid var(--line);padding-block:12px;margin-top:20px}.anchors a{font:400 12px/1 var(--body);letter-spacing:.18em;text-transform:uppercase;text-decoration:none;color:var(--mute);padding:8px 0;border-bottom:1px solid transparent}.anchors a:hover{color:var(--ink);border-bottom-color:var(--accent)}</style>
+</head><body>
+<main class="wrap">
+  <div class="intro">
+    <span class="eyebrow">Settings</span>
+    <h1>See how it sits in your space</h1>
+    <p>Four everyday settings, each with an example room and two ready-made sets. Every set is arranged and priced 10% below buying the pieces on their own.</p>
+    <nav class="anchors" aria-label="Jump to setting"><a href="#home">Home</a><a href="#office">Office</a><a href="#party">Parties</a><a href="#cultural">Cultural events</a></nav>
+  </div>
+  <div id="sets"></div>
+</main>
+<script src="assets/data.js"></script>
+<script src="assets/art.js"></script>
+<script src="assets/app.js"></script>
+<script>
+(function(){
+  App.layout('settings');
+  var D=DATA,root=document.getElementById('sets'),h='';
+  D.settings.forEach(function(s,k){
+    var sets=D.sets.filter(function(x){return x.setting===s.id});
+    h+='<section class="set'+(k%2?' flip':'')+'" id="'+s.id+'" aria-labelledby="h-'+s.id+'">'+
+      '<div class="set-pic" data-rv="scale">'+Art.scene(s.scene)+'</div>'+
+      '<div class="set-txt" data-rv><span class="eyebrow">'+s.tag+'</span><h2 id="h-'+s.id+'">'+s.name+'</h2><p class="mute">'+s.lead+'</p>'+
+      '<ul>'+s.tips.map(function(t){return '<li>'+t+'</li>'}).join('')+'</ul>'+
+      '<a class="link" style="justify-self:start" href="shop.html#'+s.id+'">Shop '+s.name.toLowerCase()+' vases</a></div></section>'+
+      '<div class="looks" data-stagger>'+sets.map(function(x){
+        var items=App.setItems(x);
+        return '<article class="look" data-rv><div class="pic">'+Art.group(items)+'</div><div class="inf"><div class="row"><h3>'+x.name+'</h3><span><s>'+App.money(x.full)+'</s>'+App.money(x.price)+'</span></div>'+
+          '<p class="mute" style="font-size:15px">'+x.desc+'</p><small>'+x.items.map(function(id){return D.byId[id].name}).join(' \u00b7 ')+'</small>'+
+          '<button class="btn sm plain" style="justify-self:start" type="button" data-addset="'+x.id+'">Add set to bag</button></div></article>';
+      }).join('')+'</div>';
+  });
+  root.innerHTML=h;
+  App.wire();App.reveal();
+})();
+</script>
+</body></html>

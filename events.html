@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en" class="sub"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Event setups | The Floral Edit</title>
+<meta name="theme-color" content="#535C3D">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Marcellus&display=swap">
+<link rel="stylesheet" href="assets/style.css">
+</head><body>
+<main class="wrap">
+  <div class="intro"><span class="eyebrow">Upcoming setups</span><h1>Vases and flowers for the season</h1>
+    <p>Each setup pairs vases with the flowers that suit the occasion. Flowers vary in how quickly we can get them, so every flower shows its delivery time and is subject to availability.</p>
+    <nav class="anchors" id="an" aria-label="Jump to event" style="display:flex;gap:6px 26px;flex-wrap:wrap;border-block:1px solid var(--line);padding-block:12px;margin-top:20px"></nav></div>
+  <div id="evs"></div>
+</main>
+<script src="assets/data.js"></script>
+<script src="assets/art.js"></script>
+<script src="assets/app.js"></script>
+<script>
+(function(){
+  App.layout('events');
+  var D=DATA,h='';
+  document.getElementById('an').innerHTML=D.events.map(function(e){return '<a class="link" style="border:0" href="#'+e.id+'">'+e.name+'</a>'}).join('');
+  D.events.forEach(function(e,k){
+    var s=D.sets.filter(function(x){return x.event===e.id})[0],T=D.tiers[s.tier];
+    h+='<section class="evsec'+(k%2?' flip':'')+'" id="'+e.id+'" style="--ev:'+e.bg+'"><div class="set-pic" data-rv="scale">'+Art.group(App.setItems(s))+'</div>'+
+     '<div class="set-txt" data-rv><span class="eyebrow">'+e.tag+'</span><h2>'+e.name+'</h2><p class="mute">'+e.lead+'</p>'+
+     '<div><span class="eyebrow" style="display:block;margin-bottom:10px;color:var(--mute)">Flowers that suit it</span><div class="evrow">'+e.flowers.map(function(id){var f=D.fById[id];return '<span class="tier '+f.tier+'">'+f.name+' \u00b7 '+D.tiers[f.tier].n+'</span>'}).join('')+'</div></div>'+
+     '<ul>'+e.tips.map(function(t){return '<li>'+t+'</li>'}).join('')+'</ul>'+
+     '<div class="evprice"><strong style="font-family:var(--display);font-size:1.15rem;font-weight:400">'+s.name+'</strong> <span class="mute" style="font-size:14px">'+s.desc+'</span><br><s>'+App.money(s.full)+'</s>'+App.money(s.price)+' <span class="tier '+s.tier+'" style="margin-left:6px">'+T.n+'</span></div>'+
+     '<div class="evbtns"><button class="btn sm plain" type="button" data-addset="'+s.id+'">Add set to bag</button><a class="link" href="product.html#'+e.vases[0]+'" data-pid="'+e.vases[0]+'">Choose your own flowers</a></div></div></section>';
+  });
+  document.getElementById('evs').innerHTML=h;
+  App.wire();App.reveal();
+  var t=(location.hash||'').slice(1);if(t&&document.getElementById(t))setTimeout(function(){document.getElementById(t).scrollIntoView()},60);
+})();
+</script>
+</body></html>
